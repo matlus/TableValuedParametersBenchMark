@@ -10,7 +10,7 @@ using TableValuedParameterExample;
 namespace ConsoleApp2
 {
     [MemoryDiagnoser]
-    [Config(typeof(Config))]
+    ////[Config(typeof(Config))]
     public class Program
     {
         ////private class Config : ManualConfig
