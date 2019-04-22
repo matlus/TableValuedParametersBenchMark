@@ -77,7 +77,7 @@ namespace TableValuedParameterExample
             char ch;
             for (int i = 0; i < length - 4; i++)
             {
-                int rnd = random.Next(0, 1);
+                int rnd = random.Next(0, 3);
                 switch (rnd)
                 {
                     case LOWERCASE: ch = Convert.ToChar(random.Next(97, 122)); break;
@@ -90,6 +90,22 @@ namespace TableValuedParameterExample
                 sb.Append(ch);
             }
             return sb.ToString();
+        }
+
+        public static string[] GenerateUniqueAsciiStrings(int length)
+        {
+            var count = 0;
+            var hashSet = new HashSet<string>();
+            do
+            {
+                if (hashSet.Add(GetRandomAciiString(20)))
+                {
+                    count++;
+                }
+
+            } while (count < length);
+
+            return hashSet.ToArray();
         }
 
         public static string GetRandomUnicodeString(int length)
