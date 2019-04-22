@@ -71,14 +71,16 @@
     <Build Include="dbo\Tables\Assoc_MovieGenre.sql" />
     <Build Include="dbo\StoredProcedures\CreateMovie.sql" />
     <Build Include="dbo\Types\UserDefinedTableTypes\MovieTvp.sql" />
-    <Build Include="dbo\StoredProcedures\CreateMovies.sql" />
+    <Build Include="dbo\StoredProcedures\CreateMoviesUsingCursor.sql" />
     <Build Include="dbo\StoredProcedures\GetAllMovies.sql" />
     <Build Include="dbo\StoredProcedures\GetMoviesByGenre.sql" />
     <Build Include="dbo\StoredProcedures\GetMoviesByYear.sql" />
     <Build Include="Views\MovieVw.sql" />
+    <Build Include="dbo\StoredProcedures\CreateMovies.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MovieDb.publish.xml" />
+    <None Include="MovieDb.publishToSQLExpress.publish.xml" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Scripts\Script.PostDeployment_SeedData.sql" />
