@@ -20,6 +20,13 @@ namespace TableValuedParameterExample
             return BitConverter.ToInt32(buffer, 0);
         }
 
+        private static uint GetRandomUintNumber()
+        {
+            var buffer = new byte[4];
+            rngCrypto.GetBytes(buffer);
+            return BitConverter.ToUInt32(buffer, 0);
+        }
+
         public static int[] GetRandomUniqueInts(int numberOfInts)
         {
             using (var rng = new RNGCryptoServiceProvider())
@@ -30,7 +37,7 @@ namespace TableValuedParameterExample
                 var generated = 0;
                 do
                 {
-                    var number = GetRandomNumber();                    
+                    var number = GetRandomNumber();
                     if (!hashset.Contains(number))
                     {
                         randomInts[generated] = number;
@@ -41,6 +48,27 @@ namespace TableValuedParameterExample
                 while (generated < numberOfInts);
 
                 return randomInts;
+            }
+        }
+
+        public static int GetRandomNumberBetween(int minValue, int maxValue)
+        {
+            if (minValue == maxValue)
+            {
+                return minValue;
+            }
+
+            int diff = maxValue - minValue;
+            while (true)
+            {
+                UInt32 rand = GetRandomUintNumber();
+
+                Int64 max = (1 + (Int64)UInt32.MaxValue);
+                Int64 remainder = max % diff;
+                if (rand < max - remainder)
+                {
+                    return (Int32)(minValue + (rand % diff));
+                }
             }
         }
 
