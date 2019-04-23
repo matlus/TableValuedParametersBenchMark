@@ -251,7 +251,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DropAndRecreateMovieDb.sql" />
+    <Content Include="DropAndRecreateMovieDb_LocalDb.sql" />
+    <Content Include="DropAndRecreateMovieDb_SQLEXPRESS.sql" />
   </ItemGroup>
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.9.2\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
