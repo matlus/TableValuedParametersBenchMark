@@ -19,7 +19,7 @@ namespace ConsoleApp2
         private string[] s_uniqueMovieTitles;
         private IEnumerable<ImdbMovie> _allMovies;
 
-        [Params(10/*, 20, 30, 40, 50, 100, 1000, 10000, 100000*/)]
+        [Params(10, 20, 30, 40, 50, 100, 1000, 10000, 100000)]
         public int NumberOfRecords { get; set; }
 
         static void Main(string[] args)
