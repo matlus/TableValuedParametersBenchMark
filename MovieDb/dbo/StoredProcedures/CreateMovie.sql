@@ -4,6 +4,8 @@
 	@Year int,
 	@ImageUrl varchar(200)
 AS
+	SET NOCOUNT ON
+
 	INSERT INTO dbo.Movie
 	(Title, Year, ImageUrl)
 	VALUES(@Title, @Year, @ImageUrl)
@@ -25,5 +27,7 @@ AS
 	INSERT INTO dbo.Assoc_MovieGenre
 	(MovieId, GenreId)
 	VALUES(@MovieId, @GenreId)
+
+	SET NOCOUNT OFF
 
 RETURN @MovieId

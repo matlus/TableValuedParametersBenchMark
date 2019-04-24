@@ -38,6 +38,13 @@ namespace ConsoleApp2
                     dbCommand.ExecuteNonQuery();
                 }
             }
+            catch(SqlException e)
+            {
+                if (e.Message.Contains("provider: Named Pipes Provider, error: 0 - No process is on the other end of the pipe"))
+                {
+                    throw new DatasbeDoesNotExistException("Target Database MovieDb does not Exist. Please Publish the database using the  MovieDb.publish.xml Publish script from the MovieDb Project", e);
+                }
+            }
             finally
             {
                 dbConnection.CloseAndDispose();
@@ -112,5 +119,17 @@ namespace ConsoleApp2
                 dbConnection.CloseAndDispose();
             }
         }
+    }
+
+
+    [Serializable]
+    public sealed class DatasbeDoesNotExistException : Exception
+    {
+        public DatasbeDoesNotExistException() { }
+        public DatasbeDoesNotExistException(string message) : base(message) { }
+        public DatasbeDoesNotExistException(string message, Exception inner) : base(message, inner) { }
+        private DatasbeDoesNotExistException(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }
