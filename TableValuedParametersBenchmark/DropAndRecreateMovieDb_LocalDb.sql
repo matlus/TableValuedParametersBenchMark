@@ -79,7 +79,7 @@ ALTER DATABASE [MovieDb] SET QUERY_STORE = OFF
 GO
 USE [MovieDb]
 GO
-/****** Object:  UserDefinedTableType [dbo].[MovieTvp]    Script Date: 4/18/2019 1:23:17 PM ******/
+/****** Object:  UserDefinedTableType [dbo].[MovieTvp]    Script Date: 4/24/2019 3:20:42 PM ******/
 CREATE TYPE [dbo].[MovieTvp] AS TABLE(
 	[Title] [varchar](50) NOT NULL,
 	[Genre] [varchar](50) NOT NULL,
@@ -91,7 +91,7 @@ CREATE TYPE [dbo].[MovieTvp] AS TABLE(
 )WITH (IGNORE_DUP_KEY = OFF)
 )
 GO
-/****** Object:  Table [dbo].[Assoc_MovieGenre]    Script Date: 4/18/2019 1:23:17 PM ******/
+/****** Object:  Table [dbo].[Assoc_MovieGenre]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -101,7 +101,7 @@ CREATE TABLE [dbo].[Assoc_MovieGenre](
 	[GenreId] [int] NOT NULL
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Genre]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  Table [dbo].[Genre]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -115,7 +115,7 @@ CREATE TABLE [dbo].[Genre](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Movie]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  Table [dbo].[Movie]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -131,7 +131,7 @@ CREATE TABLE [dbo].[Movie](
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
-/****** Object:  View [dbo].[MovieVw]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  View [dbo].[MovieVw]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -149,7 +149,7 @@ AS
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [IX_Genre]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  Index [IX_Genre]    Script Date: 4/24/2019 3:20:42 PM ******/
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Genre] ON [dbo].[Genre]
 (
 	[Title] ASC
@@ -157,7 +157,7 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX_Genre] ON [dbo].[Genre]
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [IX_Movie]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  Index [IX_Movie]    Script Date: 4/24/2019 3:20:42 PM ******/
 CREATE UNIQUE NONCLUSTERED INDEX [IX_Movie] ON [dbo].[Movie]
 (
 	[Title] ASC
@@ -175,7 +175,7 @@ ON DELETE CASCADE
 GO
 ALTER TABLE [dbo].[Assoc_MovieGenre] CHECK CONSTRAINT [FK_Assoc_MovieGenre_Movie]
 GO
-/****** Object:  StoredProcedure [dbo].[CreateMovie]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  StoredProcedure [dbo].[CreateMovie]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -186,6 +186,8 @@ CREATE PROCEDURE [dbo].[CreateMovie]
 	@Year int,
 	@ImageUrl varchar(200)
 AS
+	SET NOCOUNT ON
+
 	INSERT INTO dbo.Movie
 	(Title, Year, ImageUrl)
 	VALUES(@Title, @Year, @ImageUrl)
@@ -208,35 +210,33 @@ AS
 	(MovieId, GenreId)
 	VALUES(@MovieId, @GenreId)
 
+	SET NOCOUNT OFF
+
 RETURN @MovieId
 GO
-/****** Object:  StoredProcedure [dbo].[CreateMovies]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  StoredProcedure [dbo].[CreateMoviesTvpDistinctInsertInto]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE [dbo].[CreateMovies]
+CREATE PROCEDURE [dbo].[CreateMoviesTvpDistinctInsertInto]
 	@MovieTvp MovieTvp READONLY
 AS
-	SET NOCOUNT ON
-	SET IDENTITY_INSERT dbo.Movie ON
+	SET NOCOUNT ON	
 
 	-- Insert Distinct Genres into the Genre table
-INSERT
+	INSERT
 	INTO	dbo.Genre
 	SELECT DISTINCT(Genre)
 	FROM	@MovieTvp
 	EXCEPT
 	SELECT	dbo.Genre.Title
 	FROM	dbo.Genre
-	-- Insert Movies into the Movie Table
-	DECLARE	@MaxMovieId int = 0;
-	SELECT	@MaxMovieId = ISNULL(MAX(Id), 0)
-	FROM	dbo.Movie
 
+	-- Insert Movies into the Movie Table
 	INSERT
-	INTO	dbo.Movie (Id, Title, [Year], ImageUrl)
-	SELECT	@MaxMovieId + ROW_Number() OVER (ORDER BY Title) Id, Title, [Year], ImageUrl
+	INTO	dbo.Movie (Title, [Year], ImageUrl)
+	SELECT	Title, [Year], ImageUrl
 	FROM	@MovieTvp m
 	
 	-- Select the Movie.Id and the Genre.Id columns and insert into the Assoc_MovieGenre
@@ -251,18 +251,101 @@ INSERT
 	JOIN	dbo.Movie
 	ON		dbo.Movie.Title = mtvp.Title
 
-	SET IDENTITY_INSERT dbo.Movie OFF
 	SET NOCOUNT OFF
-
-
 RETURN 0
 GO
-/****** Object:  StoredProcedure [dbo].[CreateMoviesUsingCursor]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  StoredProcedure [dbo].[CreateMoviesTvpMergeInsertInto]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE [dbo].[CreateMoviesUsingCursor]
+CREATE PROCEDURE [dbo].[CreateMoviesTvpMergeInsertInto]
+	@MovieTvp MovieTvp READONLY
+AS
+	SET NOCOUNT ON
+
+	MERGE
+	INTO	dbo.Genre as g 
+	USING	(SELECT DISTINCT(Genre)
+			FROM @MovieTvp) as mtvp 
+			ON g.Title = mtvp.Genre 
+	WHEN NOT MATCHED THEN 
+	INSERT
+	VALUES	(mtvp.Genre);
+
+
+	-- Insert Movies into the Movie Table
+	INSERT
+	INTO	dbo.Movie (Title, [Year], ImageUrl)
+	SELECT	Title, [Year], ImageUrl
+	FROM	@MovieTvp m
+	
+	-- Select the Movie.Id and the Genre.Id columns and insert into the Assoc_MovieGenre
+	INSERT
+	INTO	dbo.Assoc_MovieGenre
+	SELECT	dbo.Movie.Id, dbo.Genre.Id
+	FROM	@MovieTvp mtvp
+	INNER
+	JOIN	dbo.Genre
+	ON		dbo.Genre.Title = mtvp.Genre
+	INNER
+	JOIN	dbo.Movie
+	ON		dbo.Movie.Title = mtvp.Title
+
+	SET NOCOUNT OFF
+
+RETURN 0
+GO
+/****** Object:  StoredProcedure [dbo].[CreateMoviesTvpMergeMerge]    Script Date: 4/24/2019 3:20:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[CreateMoviesTvpMergeMerge]
+	@MovieTvp MovieTvp READONLY
+AS
+	SET NOCOUNT ON
+
+	MERGE
+	INTO	dbo.Genre as g 
+	USING	(SELECT DISTINCT(Genre)
+			FROM @MovieTvp) as mtvp 
+			ON g.Title = mtvp.Genre 
+	WHEN NOT MATCHED THEN 
+	INSERT
+	VALUES	(mtvp.Genre);
+
+	-- Insert Movies into the Movie Table
+	MERGE
+	INTO	dbo.Movie as m 
+	USING	(SELECT * FROM @MovieTvp) as mtvp 
+			ON m.Title = mtvp.Title 
+	WHEN NOT MATCHED THEN	
+	INSERT
+	VALUES	(mtvp.Title, mtvp.[Year], mtvp.ImageUrl);
+	
+	-- Select the Movie.Id and the Genre.Id columns and insert into the Assoc_MovieGenre
+	INSERT
+	INTO	dbo.Assoc_MovieGenre
+	SELECT	dbo.Movie.Id, dbo.Genre.Id
+	FROM	@MovieTvp mtvp
+	INNER
+	JOIN	dbo.Genre
+	ON		dbo.Genre.Title = mtvp.Genre
+	INNER
+	JOIN	dbo.Movie
+	ON		dbo.Movie.Title = mtvp.Title
+
+	SET NOCOUNT OFF
+
+RETURN 0
+GO
+/****** Object:  StoredProcedure [dbo].[CreateMoviesTvpUsingCursor]    Script Date: 4/24/2019 3:20:42 PM ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROCEDURE [dbo].[CreateMoviesTvpUsingCursor]
 	@MovieTvp MovieTvp READONLY
 AS
 
@@ -291,7 +374,7 @@ AS
 	SET NOCOUNT OFF
 RETURN 0
 GO
-/****** Object:  StoredProcedure [dbo].[GetAllMovies]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetAllMovies]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -303,7 +386,7 @@ AS
 
 RETURN 0
 GO
-/****** Object:  StoredProcedure [dbo].[GetMoviesByGenre]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetMoviesByGenre]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -316,7 +399,7 @@ AS
 
 RETURN 0
 GO
-/****** Object:  StoredProcedure [dbo].[GetMoviesByYear]    Script Date: 4/18/2019 1:23:18 PM ******/
+/****** Object:  StoredProcedure [dbo].[GetMoviesByYear]    Script Date: 4/24/2019 3:20:42 PM ******/
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON

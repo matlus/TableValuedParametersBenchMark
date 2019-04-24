@@ -1,5 +1,6 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Engines;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
 using System;
@@ -9,9 +10,25 @@ using TableValuedParameterExample;
 
 namespace ConsoleApp2
 {
+    [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 3, targetCount: 20)]
     [MemoryDiagnoser]
     public class Program
     {
+        private class Config : ManualConfig
+        {
+            public Config()
+            {
+                Add(
+                    Job.Dry
+                    .WithIterationCount(10)
+                    .WithWarmupCount(5)
+                   );
+                Add(DefaultConfig.Instance.GetLoggers().ToArray());
+                Add(DefaultConfig.Instance.GetExporters().ToArray());
+                Add(DefaultConfig.Instance.GetColumnProviders().ToArray());
+            }
+        }
+
         private static readonly int[] s_validYears = new int[] { 2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019 };
         private static readonly string[] s_validGenres = GenreParser.ValidGenres().ToArray();
 
@@ -19,7 +36,7 @@ namespace ConsoleApp2
         private string[] s_uniqueMovieTitles;
         private IEnumerable<ImdbMovie> _allMovies;
 
-        [Params(10, 20, 30, 40, 50, 100, 1000, 10000, 100000)]
+        [Params(5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 10000, 1000000)]
         public int NumberOfRecords { get; set; }
 
         static void Main(string[] args)
@@ -41,9 +58,27 @@ namespace ConsoleApp2
         }
 
         [Benchmark]
-        public void CreateMoviesUsingTvp()
+        public void CreateMoviesTvpMergeMerge()
         {            
-            _movieDataManager.CreateMovies(_allMovies);
+            _movieDataManager.CreateMoviesTvpMergeMerge(_allMovies);
+        }
+
+        [Benchmark]
+        public void CreateMoviesTvpMergeInsertInto()
+        {
+            _movieDataManager.CreateMoviesTvpMergeInsertInto(_allMovies);
+        }
+
+        [Benchmark]
+        public void CreateMoviesTvpDistinctInsertInto()
+        {
+            _movieDataManager.CreateMoviesTvpDistinctInsertInto(_allMovies);
+        }
+
+        [Benchmark]
+        public void CreateMoviesTvpUsingCursor()
+        {
+            _movieDataManager.CreateMoviesTvpUsingCursor(_allMovies);
         }
 
         [Benchmark]

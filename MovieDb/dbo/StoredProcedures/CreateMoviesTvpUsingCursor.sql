@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[CreateMoviesUsingCursor]
+﻿CREATE PROCEDURE [dbo].[CreateMoviesTvpUsingCursor]
 	@MovieTvp MovieTvp READONLY
 AS
 

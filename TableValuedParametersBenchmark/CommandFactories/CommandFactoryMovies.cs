@@ -70,10 +70,30 @@ namespace ConsoleApp2.CommandFactories
             return dbCommand;
         }
 
-        public static DbCommand CreateCommandForCreateMovies(DbConnection dbConnection, DbTransaction dbTransaction, IEnumerable<ImdbMovie> imdbMovies)
+        public static DbCommand CreateCommandForCreateMoviesTvpMergeMerge(DbConnection dbConnection, DbTransaction dbTransaction, IEnumerable<ImdbMovie> imdbMovies)
+        {
+            return CreateCommandForCreateMoviesUsingTvp(dbConnection, dbTransaction, imdbMovies, "dbo.CreateMoviesTvpMergeMerge");
+        }
+
+        public static DbCommand CreateCommandForCreateMoviesTvpMergeInsertInto(DbConnection dbConnection, DbTransaction dbTransaction, IEnumerable<ImdbMovie> imdbMovies)
+        {
+            return CreateCommandForCreateMoviesUsingTvp(dbConnection, dbTransaction, imdbMovies, "dbo.CreateMoviesTvpMergeInsertInto");
+        }
+
+        public static DbCommand CreateCommandForCreateMoviesTvpDistinctInsertInto(DbConnection dbConnection, DbTransaction dbTransaction, IEnumerable<ImdbMovie> imdbMovies)
+        {
+            return CreateCommandForCreateMoviesUsingTvp(dbConnection, dbTransaction, imdbMovies, "dbo.CreateMoviesTvpDistinctInsertInto");
+        }
+
+        public static DbCommand CreateCommandForCreateMoviesTvpUsingCursor(DbConnection dbConnection, DbTransaction dbTransaction, IEnumerable<ImdbMovie> imdbMovies)
+        {
+            return CreateCommandForCreateMoviesUsingTvp(dbConnection, dbTransaction, imdbMovies, "dbo.CreateMoviesTvpUsingCursor");
+        }
+
+        private static DbCommand CreateCommandForCreateMoviesUsingTvp(DbConnection dbConnection, DbTransaction dbTransaction, IEnumerable<ImdbMovie> imdbMovies, string storedProcedureName)
         {
             var dbCommand = dbConnection.CreateCommand();
-            dbCommand.CommandText = "dbo.CreateMovies";
+            dbCommand.CommandText = storedProcedureName;
             dbCommand.CommandType = CommandType.StoredProcedure;
             dbCommand.Transaction = dbTransaction;
             AddReturnValueParameter(dbCommand);

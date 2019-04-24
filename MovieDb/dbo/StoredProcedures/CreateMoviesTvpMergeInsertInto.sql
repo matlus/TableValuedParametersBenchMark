@@ -1,4 +1,4 @@
-﻿CREATE PROCEDURE [dbo].[CreateMovies]
+﻿CREATE PROCEDURE [dbo].[CreateMoviesTvpMergeInsertInto]
 	@MovieTvp MovieTvp READONLY
 AS
 	SET NOCOUNT ON

@@ -7,6 +7,7 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using ConsoleApp2.Extensions;
 using System.IO;
+using System.Diagnostics;
 
 namespace ConsoleApp2
 {
@@ -44,6 +45,10 @@ namespace ConsoleApp2
                 {
                     throw new DatasbeDoesNotExistException("Target Database MovieDb does not Exist. Please Publish the database using the  MovieDb.publish.xml Publish script from the MovieDb Project", e);
                 }
+                else
+                {
+                    throw;
+                }
             }
             finally
             {
@@ -61,7 +66,7 @@ namespace ConsoleApp2
             return dbConnection;
         }
 
-        public void CreateMovies(IEnumerable<ImdbMovie> imdbMovies)
+        public void CreateMoviesTvpMergeMerge(IEnumerable<ImdbMovie> imdbMovies)
         {
             DbConnection dbConnection = null;
             DbTransaction dbTransaction = null;
@@ -71,7 +76,88 @@ namespace ConsoleApp2
                 dbConnection = CreateDbConnection();
                 dbConnection.Open();
                 dbTransaction = dbConnection.BeginTransaction();
-                dbCommand = CommandFactoryMovies.CreateCommandForCreateMovies(dbConnection, dbTransaction, imdbMovies);
+                dbCommand = CommandFactoryMovies.CreateCommandForCreateMoviesTvpMergeMerge(dbConnection, dbTransaction, imdbMovies);
+                dbCommand.ExecuteNonQuery();
+                dbTransaction.Commit();
+            }
+            catch (DbException)
+            {
+                dbTransaction.RollbackIfNotNull();
+                throw;
+            }
+            finally
+            {
+                dbCommand.DisposeIfNotNull();
+                dbTransaction.DisposeIfNotNull();
+                dbConnection.CloseAndDispose();
+            }
+        }
+
+        public void CreateMoviesTvpMergeInsertInto(IEnumerable<ImdbMovie> imdbMovies)
+        {
+            DbConnection dbConnection = null;
+            DbTransaction dbTransaction = null;
+            DbCommand dbCommand = null;
+            try
+            {
+                dbConnection = CreateDbConnection();
+                dbConnection.Open();
+                dbTransaction = dbConnection.BeginTransaction();
+                dbCommand = CommandFactoryMovies.CreateCommandForCreateMoviesTvpMergeInsertInto(dbConnection, dbTransaction, imdbMovies);
+                dbCommand.ExecuteNonQuery();
+                dbTransaction.Commit();
+            }
+            catch (DbException)
+            {
+                dbTransaction.RollbackIfNotNull();
+                throw;
+            }
+            finally
+            {
+                dbCommand.DisposeIfNotNull();
+                dbTransaction.DisposeIfNotNull();
+                dbConnection.CloseAndDispose();
+            }
+        }
+
+        public void CreateMoviesTvpDistinctInsertInto(IEnumerable<ImdbMovie> imdbMovies)
+        {
+            DbConnection dbConnection = null;
+            DbTransaction dbTransaction = null;
+            DbCommand dbCommand = null;
+            try
+            {
+                dbConnection = CreateDbConnection();
+                dbConnection.Open();
+                dbTransaction = dbConnection.BeginTransaction();
+                dbCommand = CommandFactoryMovies.CreateCommandForCreateMoviesTvpDistinctInsertInto(dbConnection, dbTransaction, imdbMovies);
+                dbCommand.ExecuteNonQuery();
+                dbTransaction.Commit();
+            }
+            catch (DbException)
+            {
+                dbTransaction.RollbackIfNotNull();
+                throw;
+            }
+            finally
+            {
+                dbCommand.DisposeIfNotNull();
+                dbTransaction.DisposeIfNotNull();
+                dbConnection.CloseAndDispose();
+            }
+        }
+
+        public void CreateMoviesTvpUsingCursor(IEnumerable<ImdbMovie> imdbMovies)
+        {
+            DbConnection dbConnection = null;
+            DbTransaction dbTransaction = null;
+            DbCommand dbCommand = null;
+            try
+            {
+                dbConnection = CreateDbConnection();
+                dbConnection.Open();
+                dbTransaction = dbConnection.BeginTransaction();
+                dbCommand = CommandFactoryMovies.CreateCommandForCreateMoviesTvpUsingCursor(dbConnection, dbTransaction, imdbMovies);
                 dbCommand.ExecuteNonQuery();
                 dbTransaction.Commit();
             }

@@ -247,7 +247,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="DeployToLocalDb.bat" />
+    <None Include="PublishMovieDbToLocalDb.bat" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
