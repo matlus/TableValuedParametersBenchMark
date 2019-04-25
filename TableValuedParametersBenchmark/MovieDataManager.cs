@@ -158,6 +158,7 @@ namespace ConsoleApp2
                 dbConnection.Open();
                 dbTransaction = dbConnection.BeginTransaction();
                 dbCommand = CommandFactoryMovies.CreateCommandForCreateMoviesTvpUsingCursor(dbConnection, dbTransaction, imdbMovies);
+                dbCommand.CommandTimeout = 120;
                 dbCommand.ExecuteNonQuery();
                 dbTransaction.Commit();
             }
@@ -181,7 +182,7 @@ namespace ConsoleApp2
             DbCommand dbCommand = null;
             try
             {
-                dbConnection = CreateDbConnection();
+                dbConnection = CreateDbConnection();                
                 dbConnection.Open();
                 dbTransaction = dbConnection.BeginTransaction();
 

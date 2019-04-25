@@ -128,22 +128,5 @@ namespace ConsoleApp2.CommandFactories
                 yield return sqlDataRecord;
             }
         }
-
-        private static List<SqlDataRecord> ConvertToSqlDataRecordList(IEnumerable<ImdbMovie> imdbMovies)
-        {
-            var sqlDataRecords = new List<SqlDataRecord>();            
-
-            foreach (var movie in imdbMovies)
-            {
-                var sqlDataRecord = new SqlDataRecord(s_sqlMetaDataCreateMovies);
-                sqlDataRecord.SetString(0, movie.Title);
-                sqlDataRecord.SetString(1, GenreParser.ToString(movie.Genre));
-                sqlDataRecord.SetInt32(2, movie.Year);
-                sqlDataRecord.SetString(3, movie.ImageUrl);
-                sqlDataRecords.Add(sqlDataRecord);
-            }
-
-            return sqlDataRecords;
-        }
     }
 }
