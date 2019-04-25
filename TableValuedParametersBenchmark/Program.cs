@@ -21,7 +21,7 @@ namespace ConsoleApp2
         private string[] s_uniqueMovieTitles;
         private IEnumerable<ImdbMovie> _allMovies;
 
-        [Params(/*5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 10000, */1000000)]
+        [Params(5, 10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 2000, 3000, 4000, 5000, 10000, 1000000)]
         public int NumberOfRecords { get; set; }
 
         static void Main(string[] args)
@@ -42,23 +42,23 @@ namespace ConsoleApp2
             _movieDataManager.DropAndRecreateMovieDb();
         }
 
-        ////[Benchmark]
-        ////public void CreateMoviesTvpMergeMerge()
-        ////{            
-        ////    _movieDataManager.CreateMoviesTvpMergeMerge(_allMovies);
-        ////}
+        [Benchmark]
+        public void CreateMoviesTvpMergeMerge()
+        {
+            _movieDataManager.CreateMoviesTvpMergeMerge(_allMovies);
+        }
 
-        ////[Benchmark]
-        ////public void CreateMoviesTvpMergeInsertInto()
-        ////{
-        ////    _movieDataManager.CreateMoviesTvpMergeInsertInto(_allMovies);
-        ////}
+        [Benchmark]
+        public void CreateMoviesTvpMergeInsertInto()
+        {
+            _movieDataManager.CreateMoviesTvpMergeInsertInto(_allMovies);
+        }
 
-        ////[Benchmark]
-        ////public void CreateMoviesTvpDistinctInsertInto()
-        ////{
-        ////    _movieDataManager.CreateMoviesTvpDistinctInsertInto(_allMovies);
-        ////}
+        [Benchmark]
+        public void CreateMoviesTvpDistinctInsertInto()
+        {
+            _movieDataManager.CreateMoviesTvpDistinctInsertInto(_allMovies);
+        }
 
         [Benchmark]
         public void CreateMoviesTvpUsingCursor()
@@ -66,11 +66,11 @@ namespace ConsoleApp2
             _movieDataManager.CreateMoviesTvpUsingCursor(_allMovies);
         }
 
-        ////[Benchmark]
-        ////public void CreateMoviesWithoutTvp()
-        ////{
-        ////    _movieDataManager.CreateMoviesWithoutTvp(_allMovies);
-        ////}
+        [Benchmark]
+        public void CreateMoviesWithoutTvp()
+        {
+            _movieDataManager.CreateMoviesWithoutTvp(_allMovies);
+        }
 
         private IEnumerable<ImdbMovie> GetRandomImdbMovies(int requiredCount)
         {
