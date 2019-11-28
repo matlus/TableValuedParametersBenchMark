@@ -1,13 +1,10 @@
 ﻿using ConsoleApp2.CommandFactories;
-using ConsoleApp2.ModelAdapters;
+using ConsoleApp2.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
-using ConsoleApp2.Extensions;
 using System.IO;
-using System.Diagnostics;
 
 namespace ConsoleApp2
 {
@@ -27,11 +24,12 @@ namespace ConsoleApp2
 
             SqlConnection.ClearAllPools();
 
-            DbConnection dbConnection = null;            
+            DbConnection dbConnection = null;
+            DbCommand dbCommand = null;
             try
             {
                 dbConnection = CreateDbConnection();
-                var dbCommand = new SqlCommand("query", (SqlConnection)dbConnection);
+                dbCommand = new SqlCommand("query", (SqlConnection)dbConnection);
                 dbConnection.Open();
                 foreach (var query in sqlqueries)
                 {
@@ -39,7 +37,7 @@ namespace ConsoleApp2
                     dbCommand.ExecuteNonQuery();
                 }
             }
-            catch(SqlException e)
+            catch (SqlException e)
             {
                 if (e.Message.Contains("provider: Named Pipes Provider, error: 0 - No process is on the other end of the pipe"))
                 {
@@ -52,6 +50,7 @@ namespace ConsoleApp2
             }
             finally
             {
+                dbCommand.DisposeIfNotNull();
                 dbConnection.CloseAndDispose();
             }
         }
@@ -59,9 +58,7 @@ namespace ConsoleApp2
         private DbConnection CreateDbConnection()
         {
             var dataSource = @"(localdb)\ProjectsV13";
-            ////var dataSource = @"INL82013\SQLEXPRESS";
-
-            var dbConnection = _dbProviderFactory.CreateConnection();            
+            var dbConnection = _dbProviderFactory.CreateConnection();
             dbConnection.ConnectionString = $@"Data Source={dataSource};Initial Catalog=MovieDb;Integrated Security=True";
             return dbConnection;
         }
@@ -182,7 +179,7 @@ namespace ConsoleApp2
             DbCommand dbCommand = null;
             try
             {
-                dbConnection = CreateDbConnection();                
+                dbConnection = CreateDbConnection();
                 dbConnection.Open();
                 dbTransaction = dbConnection.BeginTransaction();
 
